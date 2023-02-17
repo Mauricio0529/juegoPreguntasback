@@ -80,7 +80,7 @@ public class mapperDto {
         return questionResponseDto;
     }
 
-    // modelMapper, toca
+    // modelMapper
     public static questionResponseDto questionEntityConvertirDTO(question questionEntity) {
         questionResponseDto questionResponseDto = new questionResponseDto();
         if (questionEntity != null) {
@@ -114,7 +114,7 @@ public class mapperDto {
 
 }
 
-// https://www.youtube.com/watch?v=oMpbjRBDf8A&t=3651s  minuto 40
+// https://www.youtube.com/watch?v=oMpbjRBDf8A&t=3651s
 
 
 
