@@ -7,7 +7,9 @@ import com.example.demo.dto.mapperDto.mapperDto;
 import com.example.demo.dto.questionDTO;
 import com.example.demo.dto.responseDto.questionResponseDto;
 import com.example.demo.models.answer;
+import com.example.demo.models.category;
 import com.example.demo.repository.answerRepository;
+import com.example.demo.repository.categoryRepository;
 import mapperDTO.mapperEntityAndDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -30,6 +32,9 @@ public class questionServiceImpl implements questionService {
 
 	@Autowired
 	private answerRepository answerRepository;
+
+	@Autowired
+	private categoryRepository categoryRepository;
 
 	private List<question> questionAllList = new ArrayList<>();
 	private Optional<question> getPregunta = null;
@@ -54,6 +59,66 @@ public class questionServiceImpl implements questionService {
 		return mapperDto.addDataQuestionResponseDto(question);
 	}
 
+
+	public Optional<question> getQuestionByC(Integer idQuestionRandom, Integer categoryId) {
+		List<question> listQuestion = questionRepository.findByCategoryId(categoryId);
+		Optional<question> optionalQuestion = null;
+
+		if (categoryId <= categoryRepository.count()) {
+			for (question q : listQuestion) {
+				if (q.getIdQuestion() == idQuestionRandom) {
+					optionalQuestion = Optional.of(q);
+				}
+			}
+		} else {
+			throw new RuntimeException("La categoria seleccionada es invalida");
+		}
+		return optionalQuestion;
+	}
+
+	@Override
+	public List<questionResponseDto> getQuestionByCategory(Integer categoryId) {
+		getPregunta = null;
+		List<question> listaGetQuestion = null;
+		List<questionResponseDto> listaQuestionDto = null;
+
+		if(questionAllList.size() < questionRepository.count()){
+			do {
+				Integer idRandom = generarNumeroAleatorio();
+				//getPregunta =  questionRepository.findById(idRandom);
+				getPregunta =  getQuestionByC(idRandom, categoryId);
+				//getPregunta = Optional.ofNullable(getQuestionByC(idRandom));
+
+				listaGetQuestion = Collections.singletonList(getPregunta.get());// para el front toca con el list
+				validarPreguntaRepetida = false;
+
+				if (questionAllList.isEmpty()) {
+					questionAllList.add(getPregunta.get());
+				} else {
+					/* esta agregara preguntas no repetida a la lista, este tiene que ser falso para que agregue*/
+					if(!buscarPreguntaRepetida(getPregunta)) questionAllList.add(getPregunta.get());
+				}
+
+				System.out.println(" ");
+				System.out.println("*** Prueba ****");
+
+				questionAllList.stream()
+						.forEach((e) -> {
+							System.out.println("ID: "+e.getIdQuestion() + ", Pregunta: "+ e.getQuestion());
+						});
+
+			} while (validarPreguntaRepetida);
+		}
+		System.out.println("Dato "+validarPreguntaRepetida);
+
+		if(validarPreguntaRepetida) throw new RuntimeException("Pregunta repetida");
+
+		if(getPregunta == null) throw new RuntimeException("Nivel superado!");
+
+		// se agrega la informacion a la lista del dto
+		return mapperDto.questionResponseDTOList(listaGetQuestion);
+	}
+
 	@Override
 	public questionResponseDto addQuestion(questionDTO questionDTO) {
 		question question = new question();
@@ -68,6 +133,7 @@ public class questionServiceImpl implements questionService {
 		List<question> questionList = questionRepository.findAll();
 		return mapperDto.questionResponseDTOList(questionList);
 	}
+
 
 	// se coloca list para retornarlo mas facil en el front, ya que con el Optional es distinto
 	public List<questionResponseDto> getQuestion() {

@@ -12,6 +12,8 @@ public interface questionService {
 
     public questionResponseDto getQuestionById();
 
+    public List<questionResponseDto> getQuestionByCategory(Integer categoryId);
+
     public questionResponseDto addQuestion(questionDTO questionDTO);
     // public questionDTO updateQuestion(Integer id, questionDTO questionDTO);
     // public questionDTO deleteQuestion(Integer id, questionDTO questionDTO);

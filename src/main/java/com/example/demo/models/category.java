@@ -1,6 +1,5 @@
 package com.example.demo.models;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,27 +7,25 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.util.List;
 
-/*
-@Entity(name = "category")
+@Entity
+@Table(name = "category")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-*/
-public class categoryQuestion {
-/*
+public class category {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String nameCategory;
-    private Boolean statusCaretory;
+    private Boolean status;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "question", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "category", cascade = CascadeType.ALL)
     private List<question> questionList;
 
-    public categoryQuestion (Integer id, String nameCategory, Boolean statusCaretory) {
+    public category(Integer id, String nameCategory, Boolean status) {
         this.id = id;
         this.nameCategory = nameCategory;
-        this.statusCaretory = statusCaretory;
+        this.status = status;
     }
-*/
 }

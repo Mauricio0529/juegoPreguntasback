@@ -1,9 +1,10 @@
 package com.example.demo.dto.mapperDto;
 
-import com.example.demo.dto.responseDto.answerOptionDto;
 import com.example.demo.dto.responseDto.answerResponseDto;
+import com.example.demo.dto.responseDto.categoryResponseDto;
 import com.example.demo.dto.responseDto.questionResponseDto;
 import com.example.demo.models.answer;
+import com.example.demo.models.category;
 import com.example.demo.models.question;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -38,14 +39,6 @@ public class mapperDto {
         return answerResponseDto;
     }
 
-    public static answerOptionDto answerOptionDto(answer answer) {
-        answerOptionDto answerOptionDto = new answerOptionDto();
-
-        answerOptionDto.setId(answer.getIdAnswer());
-        answerOptionDto.setNameAnswer(answer.getOptionAnswer());
-        return answerOptionDto;
-    }
-
     public static List<answerResponseDto> answerResponseDtoList(List<answer> answerList) {
         List<answerResponseDto> answerDto = new ArrayList<>();
         for (answer answer: answerList) {
@@ -76,6 +69,8 @@ public class mapperDto {
         }
         // pasamos la lista con el texto obtenido hacia la lista que contiene el DTO
         questionResponseDto.setAnswerName(txtAnswerList); // campos List answerName
+
+        //questionResponseDto.setCategoryId(questionEntity.getCategory().getId());
 
         return questionResponseDto;
     }
@@ -112,6 +107,31 @@ public class mapperDto {
         return questionResponseDtoList;
     }
 
+
+    public static categoryResponseDto categoryEntityToDto(category categoryEntity) {
+        categoryResponseDto categoryResponseDto = new categoryResponseDto();
+        categoryResponseDto.setId(categoryEntity.getId());
+        categoryResponseDto.setNameCategory(categoryEntity.getNameCategory());
+
+  /*      List<questionResponseDto> questionResponseDtoList = new ArrayList<>();
+        List<question> questionList = categoryEntity.getQuestionList();
+
+        for(question q : questionList) {
+            questionResponseDtoList.add(addDataQuestionResponseDto(q));
+        }
+        categoryResponseDto.setQuestionList(questionResponseDtoList);
+*/
+        return categoryResponseDto;
+    }
+
+    public static List<categoryResponseDto> categoryResponseDTOList(List<category> categoryEntityList) {
+        List<categoryResponseDto> categoryResponseDtoList = new ArrayList<>();
+
+        for (category category: categoryEntityList) {
+            categoryResponseDtoList.add(categoryEntityToDto(category));
+        }
+        return categoryResponseDtoList;
+    }
 }
 
 // https://www.youtube.com/watch?v=oMpbjRBDf8A&t=3651s

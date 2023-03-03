@@ -18,4 +18,5 @@ public class questionResponseDto {
     * TOCARIA devolver el dto del answer, para que tener el texto y el boolean
     * */
     private List<answerResponseDto> answerName;
+    // private Integer categoryId;
 }

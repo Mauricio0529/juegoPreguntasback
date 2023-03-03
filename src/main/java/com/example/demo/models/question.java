@@ -6,7 +6,6 @@ import java.util.List;
 
 @Entity
 @Table(name = "question")
-
 public class question {
 
 	/* la relacion apunta hacia la clase questionAndAnswer */
@@ -26,6 +25,10 @@ public class question {
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "question", cascade = CascadeType.ALL)
 	private List<answer> optionsAnswerList;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "categoryId")
+	private category category;
+
 /*	@JsonIgnore // para ignorar este campo al momento de mostrar los datos
 	@OneToMany(mappedBy = "questionId") // name foregin key
 	private List<question_answer> question_answers;*/
@@ -39,6 +42,12 @@ public class question {
 	public question(Integer idQuestion, String question) {
 		this.idQuestion = idQuestion;
 		this.question = question;
+	}
+
+	public question(Integer idQuestion, String question, category category) {
+		this.idQuestion = idQuestion;
+		this.question = question;
+		this.category = category;
 	}
 
 	public Integer getIdQuestion() {
@@ -55,6 +64,14 @@ public class question {
 
 	public void setQuestion(String question) {
 		this.question = question;
+	}
+
+	public com.example.demo.models.category getCategory() {
+		return category;
+	}
+
+	public void setCategory(com.example.demo.models.category category) {
+		this.category = category;
 	}
 
 	public List<answer> getOptionsAnswerList() {
