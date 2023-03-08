@@ -16,6 +16,7 @@ import java.util.List;
 public class mapperDto {
  /*
  * se mappea para las respuesta(response) del dto
+ * mapstruc - es mejor opcion que el modelMapper
  *
  * */
 

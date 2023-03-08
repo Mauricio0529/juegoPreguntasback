@@ -7,7 +7,6 @@ import com.example.demo.dto.mapperDto.mapperDto;
 import com.example.demo.dto.questionDTO;
 import com.example.demo.dto.responseDto.questionResponseDto;
 import com.example.demo.models.answer;
-import com.example.demo.models.category;
 import com.example.demo.repository.answerRepository;
 import com.example.demo.repository.categoryRepository;
 import mapperDTO.mapperEntityAndDTO;
@@ -38,11 +37,22 @@ public class questionServiceImpl implements questionService {
 
 	private List<question> questionAllList = new ArrayList<>();
 	private Optional<question> getPregunta = null;
-	private boolean validarPreguntaRepetida = false;
+	private boolean repeatedQuestion = false; //validar pregunta repetida
+	private Integer valueMinimum = 0, idCategory = 0, categorySelected = 0;
 
 	public Integer generarNumeroAleatorio() {
+		//Integer numeroAleatorio = random.nextInt((questionRepository.findAll().size()-1) + 1) + 1;
+		//Integer numeroAleatorio = minimo + random.nextInt((minimo+4) - minimo + 1);
+		List<question> listQuestion = questionRepository.findByCategoryId(idCategory);
+
+		for (question q : listQuestion) {
+			if(valueMinimum == 0) {
+				valueMinimum = q.getIdQuestion();
+			}
+		}
+
 		Random random = new Random();
-		Integer numeroAleatorio = random.nextInt((questionRepository.findAll().size()-1) + 1) + 1;
+		Integer numeroAleatorio = valueMinimum + random.nextInt((valueMinimum+4) - valueMinimum + 1);
 		return numeroAleatorio;
 	}
 
@@ -59,15 +69,18 @@ public class questionServiceImpl implements questionService {
 		return mapperDto.addDataQuestionResponseDto(question);
 	}
 
-
-	public Optional<question> getQuestionByC(Integer idQuestionRandom, Integer categoryId) {
+	public Optional<question> getQuestionByIdCategory(Integer idQuestionRandom, Integer categoryId) {
 		List<question> listQuestion = questionRepository.findByCategoryId(categoryId);
+		// getPregunta = null;
 		Optional<question> optionalQuestion = null;
 
 		if (categoryId <= categoryRepository.count()) {
 			for (question q : listQuestion) {
+				// se busca el id que sea igual al del numero randon
 				if (q.getIdQuestion() == idQuestionRandom) {
 					optionalQuestion = Optional.of(q);
+					//getPregunta = Optional.ofNullable(q);
+					System.out.println(q.getIdQuestion());
 				}
 			}
 		} else {
@@ -79,41 +92,61 @@ public class questionServiceImpl implements questionService {
 	@Override
 	public List<questionResponseDto> getQuestionByCategory(Integer categoryId) {
 		getPregunta = null;
-		List<question> listaGetQuestion = null;
-		List<questionResponseDto> listaQuestionDto = null;
+		idCategory = categoryId;
+		List<question> listaGetQuestion = new ArrayList<>();
+		int contador = 0;
 
-		if(questionAllList.size() < questionRepository.count()){
-			do {
-				Integer idRandom = generarNumeroAleatorio();
-				//getPregunta =  questionRepository.findById(idRandom);
-				getPregunta =  getQuestionByC(idRandom, categoryId);
-				//getPregunta = Optional.ofNullable(getQuestionByC(idRandom));
+		do {
+			if(categorySelected == 0) {
+				categorySelected = categoryId;
+			}
+			if(contador > 0) {
+				categorySelected = categoryId;
+				valueMinimum = 0;
+				System.out.println("Sin nivelar " + categorySelected + " category :" +categoryId);
+				System.out.println("Con nivelar " + categorySelected + " category :" +categoryId);
+			}
+			if(categorySelected == categoryId){
+				// normal
+				if(questionAllList.size() < questionRepository.findByCategoryId(categoryId).size()) { // 5
+					do {
+						Integer idRandom = generarNumeroAleatorio();
+						System.out.println("El number aleatorio es : ->>" + idRandom);
+						//getPregunta =  questionRepository.findById(idRandom);
+						getPregunta = getQuestionByIdCategory(idRandom, categoryId);
+						//getPregunta = Optional.ofNullable(getQuestionByC(idRandom));
 
-				listaGetQuestion = Collections.singletonList(getPregunta.get());// para el front toca con el list
-				validarPreguntaRepetida = false;
+						listaGetQuestion = Collections.singletonList(getPregunta.get());// para el front toca con el list
+						repeatedQuestion = false;
 
-				if (questionAllList.isEmpty()) {
-					questionAllList.add(getPregunta.get());
-				} else {
-					/* esta agregara preguntas no repetida a la lista, este tiene que ser falso para que agregue*/
-					if(!buscarPreguntaRepetida(getPregunta)) questionAllList.add(getPregunta.get());
+						if (questionAllList.isEmpty()) {
+							questionAllList.add(getPregunta.get());
+						} else {
+							/* esta agregara preguntas no repetida a la lista, este tiene que ser falso para que agregue*/
+							if(!buscarPreguntaRepetida(getPregunta)) questionAllList.add(getPregunta.get());
+						}
+
+						System.out.println(" ");
+						System.out.println("*** Prueba ****");
+
+						questionAllList.stream()
+								.forEach((e) -> {
+									System.out.println("ID: "+e.getIdQuestion() + ", Pregunta: "+ e.getQuestion());
+								});
+
+					} while (repeatedQuestion);
 				}
+				System.out.println("Dato "+ repeatedQuestion);
 
-				System.out.println(" ");
-				System.out.println("*** Prueba ****");
+				if(repeatedQuestion) throw new RuntimeException("Pregunta repetida");
 
-				questionAllList.stream()
-						.forEach((e) -> {
-							System.out.println("ID: "+e.getIdQuestion() + ", Pregunta: "+ e.getQuestion());
-						});
-
-			} while (validarPreguntaRepetida);
-		}
-		System.out.println("Dato "+validarPreguntaRepetida);
-
-		if(validarPreguntaRepetida) throw new RuntimeException("Pregunta repetida");
-
-		if(getPregunta == null) throw new RuntimeException("Nivel superado!");
+				if(getPregunta == null) {
+					questionAllList = new ArrayList<>();
+					throw new RuntimeException("Nivel superado!");
+				}
+			}
+			contador++;
+		} while (categorySelected != categoryId); // idC2 == 0 || idC2 == categoryId   idC2 != 0 && idC2 != categoryId
 
 		// se agrega la informacion a la lista del dto
 		return mapperDto.questionResponseDTOList(listaGetQuestion);
@@ -146,7 +179,7 @@ public class questionServiceImpl implements questionService {
 				Integer idRandom = generarNumeroAleatorio();
 				getPregunta =  questionRepository.findById(idRandom);
 				listaGetQuestion = Collections.singletonList(getPregunta.get());// para el front toca con el list
-				validarPreguntaRepetida = false;
+				repeatedQuestion = false;
 
 				if (questionAllList.isEmpty()) {
 					questionAllList.add(getPregunta.get());
@@ -163,17 +196,17 @@ public class questionServiceImpl implements questionService {
 								System.out.println("ID: "+e.getIdQuestion() + ", Pregunta: "+ e.getQuestion());
 							});
 
-			} while (validarPreguntaRepetida);
+			} while (repeatedQuestion);
 		}
 
-		System.out.println("Dato "+validarPreguntaRepetida);
+		System.out.println("Dato "+ repeatedQuestion);
 
 		/*
 		pregunta repetida, en lugar de retornar una lista como mensaje.
 		seria mejor retornar una exception.
 	 	este mensaje no se mostraria al usuario.
 		*/
-		if(validarPreguntaRepetida) throw new RuntimeException("Pregunta repetida");
+		if(repeatedQuestion) throw new RuntimeException("Pregunta repetida");
 
 		if(getPregunta == null) throw new RuntimeException("Nivel superado!");
 
@@ -185,10 +218,10 @@ public class questionServiceImpl implements questionService {
 		questionAllList.stream()
 				.forEach(i -> {
 					if(i.getIdQuestion() == getPregunta.get().getIdQuestion()) {
-						validarPreguntaRepetida = true;
+						repeatedQuestion = true;
 					}
 				});
-		return validarPreguntaRepetida;
+		return repeatedQuestion;
 	}
 
 	// este lo puedo hacer con throws exception

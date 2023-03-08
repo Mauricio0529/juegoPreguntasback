@@ -1,14 +1,12 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.responseDto.questionResponseDto;
-import com.example.demo.models.question;
 import com.example.demo.service.questionServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/question")

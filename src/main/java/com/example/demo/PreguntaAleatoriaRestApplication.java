@@ -19,21 +19,21 @@ import java.util.List;
 import java.util.Optional;
 
 @SpringBootApplication
-public class PreguntaAleatoriaRestApplication  { // implements CommandLineRunner
+public class PreguntaAleatoriaRestApplication { // implements CommandLineRunner
 
 	// static Gson gsonConverter = new GsonBuilder().setPrettyPrinting().create();
 
 	// instanciamos el mapper del dto
 	//static mapperEntityAndDTO modelMapper = mapperEntityAndDTO.singleInstance();
 
-/*	@Autowired
+	@Autowired
 	private questionRepository questionRespository;
 
 	@Autowired
 	private categoryRepository categoryRepository;
 
 	@Autowired
-	private answerRepository answerRepository;*/
+	private answerRepository answerRepository;
 
 	public static void main(String[] args) {
 		SpringApplication.run(PreguntaAleatoriaRestApplication.class, args);
@@ -53,35 +53,55 @@ public class PreguntaAleatoriaRestApplication  { // implements CommandLineRunner
 		};
 	}
 
-	//@Override
-	//public void run(String... args) throws Exception {
-		/* category category = new category(4, "Cultura General", true );
+	/*
 
-		question questionA = new question(3, "Cuantos departamentos tiene Colombia");
+	@Override
+	public void run(String... args) throws Exception {
+		category category = new category(4, "Cultura General", true);
 
-		question questionB = new question(4, "Cuantos paises existen en el mundo");
-		*/
-
-		/*
-			answer optionsAnswerA = new answer(21, "V", true);
-			answer optionsAnswerB = new answer(22, "X", false);
-			answer optionsAnswerC = new answer(23, "|||", false);
-			answer optionsAnswerD = new answer(24, "XX", false);
-		*/
-
-	/*	List<question> questionList = new ArrayList<>();
+		question questionA = new question(20, "¿Cuál es el planeta más grande del Sistema Solar?");
+		// pasamos el objeto categoria a preguntas, para que el id de categoria se registre en la preguntas.
 		questionA.setCategory(category);
-		questionB.setCategory(category);
 
+		answer optionsAnswerA = new answer(77, "Marte", false);
+		answer optionsAnswerB = new answer(78, "Jupiter", true);
+		answer optionsAnswerC = new answer(79, "Saturno", false);
+		answer optionsAnswerD = new answer(80, "Venus", false);
+		// pasamos el objeto pregunta a respuestas, para que el id de pregunta se registre en la respuestas.
+		optionsAnswerA.setQuestion(questionA);
+		optionsAnswerB.setQuestion(questionA);
+		optionsAnswerC.setQuestion(questionA);
+		optionsAnswerD.setQuestion(questionA);
+
+		// lista de preguntas
+		List<question> questionList = new ArrayList<>();
+		// se pasa el objeto con la pregunta y el id de categoria que se registro en el objeto questionA
 		questionList.add(questionA);
-		questionList.add(questionB);
+		//questionList.add(questionB);
 
+		// lista de respuestas
+		List<answer> answerList = new ArrayList<>();
+		// se pasa el objeto con la respuesta y el id de pregunta que se registro en el objeto optionsAnswerA...optionsAnswerD
+		answerList.add(optionsAnswerA);
+		answerList.add(optionsAnswerB);
+		answerList.add(optionsAnswerC);
+		answerList.add(optionsAnswerD);
+
+
+		// se pasa la lista que tengan en la entity
+		// category posee las preguntas
 		category.setQuestionList(questionList);
 
-		categoryRepository.save(category);*/
+		// question posee las respuestas
+		questionA.setOptionsAnswerList(answerList);
 
-	//}
+		// se hace una sola persistencia, ya que en las relaciones coloque cascade = CascadeType.ALL,
+		// si una tabla se hace un registro o es modificada las otras seran afectadas al cambio en el id de FORENKEY de las relaciones, ->
+		// -> ya que poseen el id de sus relaciones.
+		categoryRepository.save(category);
+	}
 
+	*/
 
 // https://www.youtube.com/watch?v=G0Zc6wN7tWA&t=381s video largo, TIENE PARA HACER JUNIT TEST
 // https://www.youtube.com/watch?v=WKCD11lSh8U&list=PLub7kY4x2lvFNeqbqzlLqH8AC1ON670Hf&index=18

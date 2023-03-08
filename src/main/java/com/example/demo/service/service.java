@@ -16,7 +16,7 @@ import com.example.demo.repository.questionRepository;
 import org.springframework.stereotype.Service;
 
 //@Service
-public class serviceBasura {
+public class service {
 /*
     @Autowired
     private questionRepository questionRepository;

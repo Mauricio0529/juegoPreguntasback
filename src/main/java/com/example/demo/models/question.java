@@ -8,14 +8,15 @@ import java.util.List;
 @Table(name = "question")
 public class question {
 
-	/* la relacion apunta hacia la clase questionAndAnswer */
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer idQuestion;
 
 	@Column(name = "question")
 	private String question;
+
+	@Column(name = "points")
+	private Integer points = 1;
 
 	// ** fetch = FetchType.LAZY, al momento de hacer una peticion a esta tabla,
 	// no se mostraran o consumira esta variable, esta se usara cuando la instanciemos o llamemos
