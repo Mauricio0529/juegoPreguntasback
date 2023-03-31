@@ -12,7 +12,11 @@ public interface questionService {
 
     public questionResponseDto getQuestionById();
 
-    public List<questionResponseDto> getQuestionByCategory(Integer categoryId);
+    public List<questionResponseDto> getQuestion(Integer categoryId);
+
+    public Integer valuePointQuestion();
+
+    public boolean validateCorrectQuestion(boolean selectedQuestion);
 
     public questionResponseDto addQuestion(questionDTO questionDTO);
     // public questionDTO updateQuestion(Integer id, questionDTO questionDTO);

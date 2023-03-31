@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.responseDto.userScoreDto;
 import com.example.demo.models.rolUser;
 import com.example.demo.models.user;
 
@@ -8,16 +9,20 @@ import java.util.Set;
 
 public interface userService {
 
-    // guardamos el usuario y le pasamos un conjunto de roles donde nosotros la vamos a asignar
-    public user guardarUsuario(user user, Set<rolUser> rolUser) throws Exception;
+    /* guardamos el usuario y le pasamos un conjunto de roles donde nosotros lo vamos asignar */
+    public user saveUser(user user, Set<rolUser> rolUser) throws Exception;
 
-    /*
-    NO SE PASA EL OBJETO DE USUARIO,
-    YA QUE VAMOS A USAR EL METODO DEL REPOSITORY DE BUSCAR POR USERNAME
-    */
-    public user obtenerUsuarioByusername(String username);
+    public user getUserByusername(String username);
 
-    public void eliminarUsuarioById(Integer userId);
+    public void deleteUserById(Integer userId);
 
-    public List<user> obtenerUsuarios();
+    public List<user> getAllUsers(); // modificar este, PARA que sea DTO
+
+    public user getUserCurrent();
+
+    public user addScoreUser(Integer score);
+
+    public Integer getScoreUserOfCurrent();
+
+    public List<userScoreDto> getUsersByScoreHigh();
 }

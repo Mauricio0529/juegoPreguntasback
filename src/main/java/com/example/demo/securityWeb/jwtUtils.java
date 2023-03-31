@@ -12,8 +12,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 /*
-   * ESTE ES EL CONTRATO *
-  PARA LAS CONFIGURACIONES DEL JWT SE COLOCA @Component o en ocaciones @Service
+    ESTE ES EL CONTRATO
 */
 @Component
 public class jwtUtils {
@@ -24,7 +23,7 @@ public class jwtUtils {
         return extractClaim(token, Claims::getSubject);
     }
 
-    // traer la expiracion del token
+    /* obtener la expiracion del token */
     public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
@@ -47,7 +46,6 @@ public class jwtUtils {
         return createToken(claims, userDetails.getUsername());
     }
 
-    // se crea el token
     private String createToken(Map<String, Object> claims, String subject) {
 
         return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
@@ -55,10 +53,8 @@ public class jwtUtils {
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
     }
 
-    // se valida el token
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
-        // se valida si el token es igual con el username y se valida que no este expirado el token
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 }

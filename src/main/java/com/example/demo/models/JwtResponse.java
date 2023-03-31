@@ -10,5 +10,4 @@ import lombok.NoArgsConstructor;
 public class JwtResponse {
     /* el token de acceso cuando iniciamos sesion */
     private String token;
-
 }

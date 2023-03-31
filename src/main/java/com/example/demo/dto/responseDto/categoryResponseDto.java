@@ -10,5 +10,4 @@ import lombok.NoArgsConstructor;
 public class categoryResponseDto {
     private Integer id;
     private String nameCategory;
-    // private List<questionResponseDto> questionList;
 }

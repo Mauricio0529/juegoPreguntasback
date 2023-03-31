@@ -13,9 +13,7 @@ public class answerDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    /*
-     Esta se usa cuando quiero agregar datos, Request.
-     ESTE DTO ES EL QUE VA A PEDIR O REGISTRAR DATOS */
+    /* answerRequestDto. */
 
     private String optionAnswer;
     private Boolean correctAnswer;

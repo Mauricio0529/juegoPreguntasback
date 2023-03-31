@@ -3,39 +3,26 @@ package com.example.demo.dto.mapperDto;
 import com.example.demo.dto.responseDto.answerResponseDto;
 import com.example.demo.dto.responseDto.categoryResponseDto;
 import com.example.demo.dto.responseDto.questionResponseDto;
-import com.example.demo.models.answer;
-import com.example.demo.models.category;
-import com.example.demo.models.question;
+import com.example.demo.dto.responseDto.userScoreDto;
+import com.example.demo.models.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Component("mapperDto")
 public class mapperDto {
- /*
- * se mappea para las respuesta(response) del dto
- * mapstruc - es mejor opcion que el modelMapper
- *
- * */
 
     private static ModelMapper modelMapper = new ModelMapper();
 
-    // PASAR O MAPEAR UNA ENTITY A UN DTO
-    // CREERIA QUE AL PASAR LA CLASE, SE PASARIA LOS CAMPOS QUE TIENE LA TABLA
     public static answerResponseDto answerResponseDto(answer answerEntity) {
+
         answerResponseDto answerResponseDto = new answerResponseDto();
-        // registramos datos a la clase DTO
         answerResponseDto.setId(answerEntity.getIdAnswer());
         answerResponseDto.setAsnwerName(answerEntity.getOptionAnswer());
         answerResponseDto.setCorrectAnswer(answerEntity.getCorrectAnswer());
-
-        // establecemos el nombre o texto del question, se obtiene el texto de la question
-        // answerResponseDto.setQuestionName(answerEntity.getQuestion().getQuestion());
-
-        // o en lugar de obtener el texto, se obtiene el id para buscar las respuestas
-        //answerResponseDto.setQuestionIdNumber(answerEntity.getQuestion().getIdQuestion());
 
         return answerResponseDto;
     }
@@ -48,30 +35,19 @@ public class mapperDto {
         return answerDto;
     }
 
-    // mappear question paso 1
-    // pasar o mapear un entity a dto
-    // agregamos informacion al objecto questionResponseDto
     public static questionResponseDto addDataQuestionResponseDto(question questionEntity) {
+
         questionResponseDto questionResponseDto = new questionResponseDto();
-        questionResponseDto.setId(questionEntity.getIdQuestion()); // campo ID
-        questionResponseDto.setNameQuestion(questionEntity.getQuestion()); // campo question
+        questionResponseDto.setId(questionEntity.getIdQuestion());
+        questionResponseDto.setNameQuestion(questionEntity.getQuestion());
 
-        // se hace esto ya que la clase question y questionResponseDto poseen un List
-        /*
-        NOTA: SI QUIERO QUE APAREZCA EL BOOLEN EN LA LISTA DE ANSWER, TOCARIA EN LUGAR DE STRING SERIA LA CLASE answerDTO
-        Y ESTA LISTA PEDIRIA UN OBJETO AL MOMENTO DE AGREGAR
-        */
-        List<answerResponseDto> txtAnswerList = new ArrayList<>(); // en lugar de que sea texto, se colocaria la clase answerDTO
-        List<answer> answersObject = questionEntity.getOptionsAnswerList(); // se obtiene la info de la lista de la base de datos
+        List<answerResponseDto> answerList = new ArrayList<>();
+        List<answer> answersObject = questionEntity.getOptionsAnswerList();
 
-        // recorremos el answersObject que contiene informacion y agregamos los nombres a la lista de string, txtAnswerList
-        for (answer a: answersObject) {
-            txtAnswerList.add(answerResponseDto(a)); // se pasa un get y no una lista ni un objeto si no un texto por que solo es un dato que es texto
+        for (answer answer : answersObject) {
+            answerList.add(answerResponseDto(answer));
         }
-        // pasamos la lista con el texto obtenido hacia la lista que contiene el DTO
-        questionResponseDto.setAnswerName(txtAnswerList); // campos List answerName
-
-        //questionResponseDto.setCategoryId(questionEntity.getCategory().getId());
+        questionResponseDto.setAnswerName(answerList);
 
         return questionResponseDto;
     }
@@ -86,42 +62,21 @@ public class mapperDto {
         return questionResponseDto;
     }
 
-    // lista con pregunta y respuesta esta es para mappear el question paso 2
-    // pasar o mapear una lista ENTITY a una lista DTO
-    /* por que se crea este metodoList?, por que al momento de mapear un dto que contenga un List(depende de la relacion entre tablas)
-    * en este caso es @OneToMany uno a muchos, entonces una pregunta contiene multiples respuesta(una categoria puede contener muchos productos)
-    * */
     public static List<questionResponseDto> questionResponseDTOList(List<question> questionList) {
         List<questionResponseDto> questionResponseDtoList = new ArrayList<>();
-        /*
-            SE COLOCA question, por que estamos mapeando la clase question.
-            Se pasa la lista questionList ya que con esa se pasaria las preguntas en una lista
-             y esas preguntas se agregaria a la lista questionResponseDtoList
-        */
-        //se coloca question ya que contiene la lista de answer en la clase entity
-        for (question question: questionList){ // recorremos la lista questionList
 
-            // AQUI INSTANCIAMOS AL METODO QUE MAPEA O PASA UN ENTITY A DTO
-            // Y LE PASAMOS EL OBJETO QUE RECORRE LA LISTA QUE PASAMOS EN LA SERVICIO
-            questionResponseDtoList.add(addDataQuestionResponseDto(question)); // aqui pide ya un objetoDTO, entonces usamos el metodo que mapeamos el question
+        for (question question: questionList){
+            questionResponseDtoList.add(addDataQuestionResponseDto(question));
         }
+
         return questionResponseDtoList;
     }
-
 
     public static categoryResponseDto categoryEntityToDto(category categoryEntity) {
         categoryResponseDto categoryResponseDto = new categoryResponseDto();
         categoryResponseDto.setId(categoryEntity.getId());
         categoryResponseDto.setNameCategory(categoryEntity.getNameCategory());
 
-  /*      List<questionResponseDto> questionResponseDtoList = new ArrayList<>();
-        List<question> questionList = categoryEntity.getQuestionList();
-
-        for(question q : questionList) {
-            questionResponseDtoList.add(addDataQuestionResponseDto(q));
-        }
-        categoryResponseDto.setQuestionList(questionResponseDtoList);
-*/
         return categoryResponseDto;
     }
 
@@ -133,33 +88,25 @@ public class mapperDto {
         }
         return categoryResponseDtoList;
     }
+
+    public static userScoreDto userEntityTouserScoreDto(user userEntity) {
+        userScoreDto userScoreDto = new userScoreDto();
+        userScoreDto.setName(userEntity.getUsername());
+        userScoreDto.setScore(userEntity.getScore());
+
+        Set<rolUser> userSet = userEntity.getRolUser();
+        userSet.stream().forEach(x -> {
+                userScoreDto.setRol(x.getRol().getNameRol());
+        });
+
+        return userScoreDto;
+    }
+
+    public static List<userScoreDto> userScoreDtoList(List<user> userEntityList) {
+        List<userScoreDto> userScoreDtoList = new ArrayList<>();
+        for (user userEntity: userEntityList) {
+            userScoreDtoList.add(userEntityTouserScoreDto(userEntity));
+        }
+        return userScoreDtoList;
+    }
 }
-
-// https://www.youtube.com/watch?v=oMpbjRBDf8A&t=3651s
-
-
-
-/*
- public static questionResponseDto addDataQuestionResponseDto(question questionEntity) {
-        questionResponseDto questionResponseDto = new questionResponseDto();
-        questionResponseDto.setId(questionEntity.getIdQuestion()); // campo ID
-        questionResponseDto.setNameQuestion(questionEntity.getQuestion()); // campo question
-
-        // se hace esto ya que la clase question y questionResponseDto poseen un List
-
-     //   NOTA: SI QUIERO QUE APAREZCA EL BOOLEN EN LA LISTA DE ANSWER, TOCARIA EN LUGAR DE STRING SERIA LA CLASE answerDTO
-     //   Y ESTA LISTA PEDIRIA UN OBJETO AL MOMENTO DE AGREGAR
-
-List<String> txtAnswerList = new ArrayList<>(); // en lugar de que sea texto, se colocaria la clase answerDTO
-    List<answer> answersObject = questionEntity.getOptionsAnswerList(); // se obtiene la info de la lista de la base de datos
-
-// recorremos el answersObject que contiene informacion y agregamos los nombres a la lista de string, txtAnswerList
-        for (answer a: answersObject) {
-                txtAnswerList.add(a.getOptionAnswer()); // se pasa un get y no una lista ni un objeto si no un texto por que solo es un dato que es texto
-                }
-                // pasamos la lista con el texto obtenido hacia la lista que contiene el DTO
-                questionResponseDto.setAnswerName(txtAnswerList); // campos List answerName
-
-                return questionResponseDto;
-                }
- */

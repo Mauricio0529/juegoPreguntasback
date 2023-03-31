@@ -1,11 +1,12 @@
 package com.example.demo.controller;
 
-
+import com.example.demo.dto.responseDto.userScoreDto;
 import com.example.demo.models.rol;
 import com.example.demo.models.rolUser;
 import com.example.demo.models.user;
 import com.example.demo.service.userService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashSet;
@@ -14,52 +15,60 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/usuarios")
-@CrossOrigin("*") // el cors
+@CrossOrigin("*")
 public class userController {
+
     @Autowired
     private userService usuarioService;
 
     @PostMapping("/")
-    public user guardarUsuario(@RequestBody user user) throws Exception{
-        /* el @RequestBody manda el objeto del usuario con sus datos */
+    public user saveUser(@RequestBody user user) throws Exception{
 
-    /*
-        NO SE AGREGA LOS DATOS DEL USUARIO MANUALMENTE EN ESTE EDPOINT,
-        SI NO, EN EL FRONT O EN EL POSTMAN SE PASAN O AGREGAN LOS DATOS AL USUARIO
-        Y LOS DATOS QUE SE AGREGAN MANUALMENTE EN ESTE METODO, ES PARA QUE SEA POR DEFECTO
-    */
         Set<rolUser> roles = new HashSet<>();
 
         rol rol = new rol();
-        //rol.setId(1);
-        rol.setNameRol("INVITADO");
-        /*
-        bd_login
-        INVITADO
-        ADMIN
-         */
 
-        /* se agrega el rol y el usuario a la tabla principal*/
+        /* INVITADO, ADMIN */
+        rol.setNameRol("INVITADO");
+
+        /* se agrega el rol y usuario a la tabla principal */
         rolUser rolUser = new rolUser();
         rolUser.setUser(user);
         rolUser.setRol(rol);
 
         roles.add(rolUser);
-        return usuarioService.guardarUsuario(user,roles);
+        return usuarioService.saveUser(user,roles);
     }
 
     @GetMapping("/{username}")
-    public user obtenerUsuarioByUsername(@PathVariable("username") String username){
-        return usuarioService.obtenerUsuarioByusername(username);
+    public user getUserByUsername(@PathVariable("username") String username){
+        return usuarioService.getUserByusername(username);
     }
 
     @DeleteMapping("/{id}")
-    public void eliminarUsuarioById(@PathVariable("id") Integer id){
-        usuarioService.eliminarUsuarioById(id);
+    public void deleteUserById(@PathVariable("id") Integer id){
+        usuarioService.deleteUserById(id);
     }
 
-    @GetMapping("/listar")
-    public List<user> obtenerUsuarios(){
-        return usuarioService.obtenerUsuarios();
+    @GetMapping("/listar") // all y DTO
+    public List<user> getAllUsers(){
+        return usuarioService.getAllUsers();
+    }
+
+    /* actual usuario */
+    @GetMapping("/actualUser")
+    public ResponseEntity<user> getUserCurrent() {
+        return ResponseEntity.ok(usuarioService.getUserCurrent());
+    }
+
+    /* listar usuario por puntaje mas alto */
+    @GetMapping("/usersScore")
+    public ResponseEntity<List<userScoreDto>> getUsersByScoreHigh() {
+        return ResponseEntity.ok(usuarioService.getUsersByScoreHigh());
+    }
+
+    @GetMapping("/getScore")
+    public ResponseEntity<Integer> getScoreUserCurrent() {
+        return ResponseEntity.ok(usuarioService.getScoreUserOfCurrent());
     }
 }

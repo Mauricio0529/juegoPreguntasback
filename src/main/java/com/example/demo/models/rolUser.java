@@ -6,7 +6,6 @@ import javax.persistence.*;
 @Table(name = "rol_user")
 public class rolUser {
 
-    // TABLA PRINCIPAL DE USUARIO
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;

@@ -17,8 +17,11 @@ import java.util.Objects;
 @Service
 public class answerServiceImpl implements answerService {
 
-    @Autowired
     private answerRepository answerRepository;
+
+    public answerServiceImpl(answerRepository answerRepository) {
+        this.answerRepository = answerRepository;
+    }
 
     @Autowired
     private questionService questionService;
@@ -30,17 +33,10 @@ public class answerServiceImpl implements answerService {
         answerEntity.setOptionAnswer(answerDTO.getOptionAnswer());
         answerEntity.setCorrectAnswer(answerDTO.getCorrectAnswer());
 
-        /*
-            Validamos si la peticion nos trae la pregunta.
-            por que una respuesta tiene al menos una pregunta
-            https://www.youtube.com/watch?v=oMpbjRBDf8A&t=3964s
-            https://www.youtube.com/watch?v=eqwzM9Xny2s
-        */
         if(answerDTO.getQuestionId() == null) {
             throw new IllegalArgumentException("No contiene la pregunta");
         }
 
-        // obtenemos el id de pregunta por medio de la clase servicio question
         question question = questionService.getQuestionId(answerDTO.getQuestionId());
         answerEntity.setQuestion(question);
 
@@ -67,14 +63,14 @@ public class answerServiceImpl implements answerService {
         return answerResponseDto.getCorrectAnswer() == true;
     }
 
-    // Mio
+    //
     @Override
     public answerResponseDto getAnswerByQuestionId(Integer idQuestion) {
         answer answer = getIdQuestionToAnswer(idQuestion);
         return mapperDto.answerResponseDto(answer);
     }
 
-    // Mio
+    //
     @Override
     public answer getIdQuestionToAnswer(Integer idQuestion) {
         answer answer = answerRepository.findByQuestion(idQuestion);
@@ -92,13 +88,12 @@ public class answerServiceImpl implements answerService {
         answerToUpdate.setOptionAnswer(answerDTO.getOptionAnswer());
         answerToUpdate.setCorrectAnswer(answerDTO.getCorrectAnswer());
 
-        // VALIDAMIS si la respuesta posee una pregunta
+        // si la respuesta posee una pregunta
         if(answerDTO.getQuestionId() != null) {
             question question = questionService.getQuestionId(answerDTO.getQuestionId());
-            // AGREGAMOS EL OBJETO EN LA ENTITY
             answerToUpdate.setQuestion(question);
         }
-        //answer answer1 = answerRepository.save(answerToUpdate);
+        answerRepository.save(answerToUpdate);
         return mapperDto.answerResponseDto(answerToUpdate);
     }
 
@@ -117,11 +112,9 @@ public class answerServiceImpl implements answerService {
         for (answer a: answer) {
             answerDto.add(mapperDto.answerResponseDto(a));
         }
-        // 1:48:00 minuto
         return answerDto;
     }
 
-    // AGREGAR UNA PREGUNTA A RESPUESTA MINUTO 1:53:38
     @Override
     public answerResponseDto addQuestionToAnswer(Integer idQuestionToAnswer, Integer idQueston) {
         return null;

@@ -25,13 +25,18 @@ public class questionController {
         return ResponseEntity.ok(questionService.getAllQuestion());
     }
 
-    @GetMapping("/getQuestionRandom") // este se obtiene la pregunta y el id(numero de la pregunta)
-    private ResponseEntity<List<questionResponseDto>> getQuestion() {
-        return ResponseEntity.ok(questionService.getQuestion());
+    @GetMapping("/points")
+    private ResponseEntity<Integer> validatePointsQuestion() {
+        return  ResponseEntity.ok(questionService.valuePointQuestion());
     }
 
-    @GetMapping("/getQuestionByCategory/{id}")
+    @GetMapping("/getQuestion/{id}")
     private ResponseEntity<List<questionResponseDto>> getQuestionByCategory(@PathVariable("id") Integer id) {
-        return ResponseEntity.ok(questionService.getQuestionByCategory(id));
+        return ResponseEntity.ok(questionService.getQuestion(id));
+    }
+
+    @GetMapping("/validateQuestion/{answerSelected}")
+    private ResponseEntity<Boolean> validateCorrectQuestion(@PathVariable("answerSelected") boolean selectedQuestion) {
+        return ResponseEntity.ok(questionService.validateCorrectQuestion(selectedQuestion));
     }
 }

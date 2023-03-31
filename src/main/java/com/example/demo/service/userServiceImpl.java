@@ -1,5 +1,7 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.mapperDto.mapperDto;
+import com.example.demo.dto.responseDto.userScoreDto;
 import com.example.demo.models.rolUser;
 import com.example.demo.models.user;
 import com.example.demo.repository.rolRepository;
@@ -7,61 +9,100 @@ import com.example.demo.repository.usersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class userServiceImpl  implements userService {
 
-    private usersRepository usuarioRepository;
+    private usersRepository userRepository;
     private rolRepository rolRepository;
 
-    @Autowired
-    public userServiceImpl(usersRepository usuarioRepository, rolRepository rolRepository) {
-        this.usuarioRepository = usuarioRepository;
+    public userServiceImpl(usersRepository userRepository, rolRepository rolRepository) {
+        this.userRepository = userRepository;
         this.rolRepository = rolRepository;
     }
 
+    @Autowired
+    private userDetailsServiceImpl userDetailsServiceImpl;
+
     @Override
-    public user guardarUsuario(user user, Set<rolUser> rolUsuarios) throws Exception {
-        /* pasamos el username para buscar un usuario */
-        // usuario username = usuarioRepository.findByUsername(usuarios.getUsername());
-        Optional<user> username = Optional.ofNullable(usuarioRepository.findByUsername(user.getUsername()));
-        if(username.isPresent()){ // usuario != null
-            System.out.println("El usuario ya existe");
+    public user saveUser(user user, Set<rolUser> rolUsuarios) throws Exception {
+
+        Optional<user> username = Optional.ofNullable(userRepository.findByUsername(user.getUsername()));
+
+        if(username.isPresent()){
             throw new Exception("El usuario ya esta presente");
-            //return usuario.get();
         }
 
-        /* Obtenemos y guardamos el rol
-        recorremos el objecto y lo guardamos en la bd
-         */
+        /* Obtenemos y guardamos el rol que hay en el userController */
         for(rolUser rolUsuario: rolUsuarios){
-            // obtenemos el objeto de la clase rolUsuario
-            // guardamos cada rol que hay en el objecto
             rolRepository.save(rolUsuario.getRol());
         }
 
-        // se pasa la lista de RolUsuarios y agregamos el rol en la lista de la clase usuario
+        /* se pasa la lista de rolUsuarios y agregamos el rol de la lista que hay en la clase user */
         user.getRolUser().addAll(rolUsuarios);
 
-        // se guarda los datos de usuario y el rol
-        return usuarioRepository.save(user);
+        return userRepository.save(user);
     }
 
     @Override
-    public user obtenerUsuarioByusername(String username) {
-        return usuarioRepository.findByUsername(username);
+    public user getUserByusername(String username) {
+        return userRepository.findByUsername(username);
     }
 
     @Override
-    public void eliminarUsuarioById(Integer userId) {
-        usuarioRepository.deleteById(userId);
+    public void deleteUserById(Integer userId) {
+        userRepository.deleteById(userId);
     }
 
     @Override
-    public List<user> obtenerUsuarios() {
-        return usuarioRepository.findAll();
+    public List<user> getAllUsers() {
+        return userRepository.findAll();
+    }
+
+    @Override
+    public user getUserCurrent() {
+        return userDetailsServiceImpl.userCurrent();
+    }
+
+    /* se guarda el score cuando el nivel termine */
+    @Override
+    public user addScoreUser(Integer score) {
+        user user = getUserCurrent();
+        user.setScore(score);
+        return userRepository.save(user);
+    }
+
+    @Override
+    public Integer getScoreUserOfCurrent() {
+        user user = getUserCurrent();
+        return user.getScore();
+    }
+
+    @Override //
+    public List<userScoreDto> getUsersByScoreHigh() {
+        List<user> userAllList  = userRepository.findAll();
+        List<user> users = new ArrayList<>();
+
+        userAllList.stream()
+                .forEach(x -> {
+                    for (rolUser rol: x.getRolUser()) {
+                        if(rol.getRol().getNameRol().equals("INVITADO")) users.add(x);
+                    }
+                });
+
+        orderScoreUser(users);
+
+        return mapperDto.userScoreDtoList(users);
+    }
+
+    private List<user> orderScoreUser(List<user> userList) {
+        Collections.sort(userList, new Comparator<user>() {
+            @Override
+            public int compare(user user1, user user2) {
+                return Integer.compare(user2.getScore(), user1.getScore());
+            }
+        });
+        return userList;
     }
 }

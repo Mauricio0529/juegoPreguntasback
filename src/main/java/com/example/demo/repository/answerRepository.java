@@ -8,6 +8,5 @@ import java.util.List;
 
 @Repository
 public interface answerRepository extends JpaRepository<answer, Integer> {
-    // public List<answer> findByQuestions(Integer idQuestion);
     public answer findByQuestion(Integer idQuestion);
 }

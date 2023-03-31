@@ -16,8 +16,8 @@ public interface answerService {
 
     public Boolean validateAnswerCorrect(Integer idAnswerSelect);
 
-    public answerResponseDto getAnswerByQuestionId(Integer idQuestion); // mio
-    public answer getIdQuestionToAnswer(Integer idQuestion); // mio
+    public answerResponseDto getAnswerByQuestionId(Integer idQuestion); //
+    public answer getIdQuestionToAnswer(Integer idQuestion); //
 
     public answerResponseDto updateAnswer(Integer id, answerDTO answerDTO);
     public answerResponseDto deleteAnswer(Integer id, answerDTO answerDTO);

@@ -8,13 +8,20 @@ import com.example.demo.repository.categoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class categoryServiceImpl implements categoryService {
 
-    @Autowired
     private categoryRepository categoryRepository;
+
+    public categoryServiceImpl(categoryRepository categoryRepository) {
+        this.categoryRepository = categoryRepository;
+    }
+
+    @Autowired
+    private questionServiceImpl questionService;
 
     @Override
     public categoryResponseDto addCategory(categoryDTO categoryDTO) {
@@ -23,6 +30,7 @@ public class categoryServiceImpl implements categoryService {
 
     @Override
     public List<categoryResponseDto> getAllCategory() {
+        questionService.questionAllList = new ArrayList<>(); // se reinicia la partida
         List<category> categoryList = categoryRepository.findAll();
         return mapperDto.categoryResponseDTOList(categoryList);
     }
